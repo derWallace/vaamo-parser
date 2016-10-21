@@ -9,7 +9,7 @@ require(__DIR__.'/config.php');
 use Symfony\Component\DomCrawler\Crawler;
 
 define('COOKIE_FILE', tempnam('/tmp/', 'parse-vaamo-jar'));
-
+$fmt = numfmt_create(SPREADSHEET_LANG, NumberFormatter::DECIMAL);
 
 
 // Get CSRF Token
@@ -50,6 +50,7 @@ $crawler = new Crawler($data);
 
 
 // Iterate over all saving goals
+$saving_goals_values = array();
 $saving_goals = $crawler->filter('div.savingsgoal-row');
 foreach ($saving_goals as $saving_goal) {
     $saving_goal_crawler = new Crawler($saving_goal);
@@ -60,7 +61,7 @@ foreach ($saving_goals as $saving_goal) {
     foreach ($modals as $modal) {
         $matches = array();
         if (1 === preg_match('/„(.*)“/', $modal->textContent, $matches)) {
-            $saving_goal_name = $matches[1];
+            $saving_goal_name = trim($matches[1]);
         }
     }
 
@@ -85,4 +86,10 @@ foreach ($saving_goals as $saving_goal) {
     }
 
     printf("%s: %.2f %%, %.2f €".PHP_EOL, $saving_goal_name, $performance_percent, $performance_eur);
+
+    $saving_goals_values[] = array(
+        'name' => $saving_goal_name,
+        'percent' => $performance_percent,
+        'eur' => $performance_eur
+    );
 }
