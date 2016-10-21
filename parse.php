@@ -93,3 +93,7 @@ foreach ($saving_goals as $saving_goal) {
         'eur' => $performance_eur
     );
 }
+
+
+// Delete cookie file
+unlink(COOKIE_FILE);
